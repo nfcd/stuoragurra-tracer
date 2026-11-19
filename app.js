@@ -274,6 +274,8 @@
   let state = { strands: [], profiles: [] };
   try { const s = JSON.parse(localStorage.getItem(STORE)); if (s && s.strands) state = s; } catch (e) { /* ignore */ }
   state.profiles = state.profiles || [];
+  const traceName = (nm) => (nm || "").replace(/^strand(\s+\d+)$/i, "trace$1");   // older versions named the traces "strand N"
+  state.strands.forEach((s) => { s.name = traceName(s.name); });
   let nextId = 1 + Math.max(0, ...state.strands.map((s) => s.id), ...state.profiles.map((p) => p.id || 0));
   const undoStack = [], redoStack = [];
   const snap = () => JSON.stringify(state);
@@ -888,7 +890,7 @@
         const c = ft.geometry.coordinates.map(([e, n]) => [e, n]);
         const pr = ft.properties || {};
         if (pr.kind === "profile") state.profiles.push({ id: nextId++, name: pr.name || profileName(), a: c[0], b: c[c.length - 1] });
-        else state.strands.push({ id: nextId++, name: pr.name || "trace " + (state.strands.length + 1),
+        else state.strands.push({ id: nextId++, name: traceName(pr.name) || "trace " + (state.strands.length + 1),
                                   confidence: CONF_COLOR[pr.confidence] ? pr.confidence : "certain", notes: pr.notes || "", coords: c,
                                   hidden: pr.visible === false });
       }
@@ -1275,7 +1277,7 @@
                  "(export them first to keep them; Undo brings the traces back).")) return;
     try {
       const [gj, csv] = await Promise.all(["interpretation/scarps.geojson", "interpretation/profile_review.csv"].map(async (u) => {
-        const r = await fetch(u); if (!r.ok) throw new Error(u + ": " + r.status); return r.text(); }));
+        const r = await fetch(u, { cache: "no-cache" }); if (!r.ok) throw new Error(u + ": " + r.status); return r.text(); }));
       if (!(await importTraces(gj, true))) return;
       const n = importReview(csv, true);
       flash(`Paper's interpretation loaded: ${state.strands.length} traces, ${n} profile decisions`);
