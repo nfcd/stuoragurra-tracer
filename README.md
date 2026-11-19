@@ -41,4 +41,4 @@ The code of the tool is released under the MIT licence (`LICENSE`).
 
 ## Contact
 
-Nestor Cardozo, University of Stavanger
+Nestor Cardozo, University of Stavanger, nestor.cardozo@uis.no
