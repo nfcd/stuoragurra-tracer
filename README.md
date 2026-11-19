@@ -4,7 +4,7 @@ A browser tool to map the postglacial fault scarps of the Stuoragurra Fault (Fin
 
 > Cardozo, N., Watson, L. Trishear inversion of lidar fault-scarp profiles along the Stuoragurra Fault, northern Norway: implications for postglacial earthquake magnitude. (in preparation)
 
-**Open the tool:** https://USERNAME.github.io/stuoragurra-tracer/
+**Open the tool:** https://nfcd.github.io/stuoragurra-tracer/
 
 It runs in the web browser, with nothing to install. Everything stays in your browser; nothing is uploaded.
 
