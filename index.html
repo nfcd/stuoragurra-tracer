@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Stuoragurra Scarp Tracer</title>
 <link rel="stylesheet" href="lib/leaflet.min.css">
-<link rel="stylesheet" href="style.css?v=20261119c">
+<link rel="stylesheet" href="style.css?v=20261119d">
   <style>[hidden] { display: none !important; }</style>  <!-- panels hidden at launch even with an old cached style.css -->
 </head>
 <body>
@@ -37,6 +37,7 @@
       <button id="new" title="Start from scratch: remove all traces, profiles and review decisions stored in this browser">New</button>
       <button id="export" class="primary" title="Save your traces and profiles as GeoJSON (EPSG:25833)">Export GeoJSON</button>
       <label class="button" title="Load traces and profiles from a GeoJSON exported earlier">Import traces<input id="import" type="file" accept=".geojson,.json" hidden></label>
+      <a class="button" href="https://github.com/nfcd/stuoragurra-tracer" target="_blank" rel="noopener" title="Files, code and description of the tool on GitHub (opens in a new tab)">GitHub</a>
       <button id="help-btn" title="Help (?)">?</button>
     </div>
   </header>
@@ -253,6 +254,6 @@
   </div>
 </div>
 <script src="lib/leaflet.min.js"></script>
-<script src="app.js?v=20261119c"></script>
+<script src="app.js?v=20261119d"></script>
 </body>
 </html>

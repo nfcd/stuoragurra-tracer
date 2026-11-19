@@ -20,6 +20,7 @@ body { font: 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, san
 .group { display: flex; gap: 4px; }
 .group.right { margin-left: auto; }
 button, .button { font: inherit; padding: 5px 10px; border: 1px solid var(--line); border-radius: 6px; background: #fff; color: var(--ink); cursor: pointer; }
+a.button { text-decoration: none; display: inline-block; }
 button:hover, .button:hover { border-color: #b9b4aa; }
 button.active { background: var(--ink); color: #fff; border-color: var(--ink); }
 button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
