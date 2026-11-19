@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Stuoragurra Scarp Tracer</title>
 <link rel="stylesheet" href="lib/leaflet.min.css">
-<link rel="stylesheet" href="style.css?v=20261119a">
+<link rel="stylesheet" href="style.css?v=20261119b">
   <style>[hidden] { display: none !important; }</style>  <!-- panels hidden at launch even with an old cached style.css -->
 </head>
 <body>
@@ -34,9 +34,9 @@
     </div>
     <div class="group right">
       <button id="paper" title="Load the scarp traces and the profile review used in the paper">Paper's interpretation</button>
-      <button id="new" title="Start from scratch: remove all strands, profiles and review decisions stored in this browser">New</button>
-      <button id="export" class="primary" title="Save your strands and profiles as GeoJSON (EPSG:25833)">Export GeoJSON</button>
-      <label class="button" title="Load interpreted traces (strands and profiles) from a GeoJSON exported earlier">Import traces<input id="import" type="file" accept=".geojson,.json" hidden></label>
+      <button id="new" title="Start from scratch: remove all traces, profiles and review decisions stored in this browser">New</button>
+      <button id="export" class="primary" title="Save your traces and profiles as GeoJSON (EPSG:25833)">Export GeoJSON</button>
+      <label class="button" title="Load traces and profiles from a GeoJSON exported earlier">Import traces<input id="import" type="file" accept=".geojson,.json" hidden></label>
       <button id="help-btn" title="Help (?)">?</button>
     </div>
   </header>
@@ -76,18 +76,18 @@
       </section>
 
       <section>
-        <h2>Strands <span id="strand-count" class="muted"></span></h2>
+        <h2>Traces <span id="strand-count" class="muted"></span></h2>
         <div class="row small" id="vis-row" hidden>
-          <button id="vis-all" title="Show all strands (Shift+H)">Show all</button>
-          <button id="vis-none" title="Hide all strands">Hide all</button>
-          <button id="vis-solo" title="Show only the selected strand">Only selected</button>
+          <button id="vis-all" title="Show all traces (Shift+H)">Show all</button>
+          <button id="vis-none" title="Hide all traces">Hide all</button>
+          <button id="vis-solo" title="Show only the selected trace">Only selected</button>
         </div>
         <ul id="strand-list"></ul>
-        <p id="no-strands" class="muted">No strands yet. Press <kbd>T</kbd> and click along a scarp.</p>
+        <p id="no-strands" class="muted">No traces yet. Press <kbd>T</kbd> and click along a scarp.</p>
       </section>
 
       <section id="strand-panel" hidden>
-        <h2>Selected strand</h2>
+        <h2>Selected trace</h2>
         <label>Name <input id="s-name" type="text"></label>
         <label>Confidence
           <select id="s-conf">
@@ -101,7 +101,7 @@
         <h3>Edit points</h3>
         <div class="row tools">
           <button id="tool-move" class="tool" title="Drag points; drag or click the small mid-segment handles to insert (M)">Move <kbd>M</kbd></button>
-          <button id="tool-insert" class="tool" title="Click on or near the strand to insert a point there (I)">Insert <kbd>I</kbd></button>
+          <button id="tool-insert" class="tool" title="Click on or near the trace to insert a point there (I)">Insert <kbd>I</kbd></button>
           <button id="tool-delete" class="tool" title="Click a point to delete it (D)">Delete <kbd>D</kbd></button>
         </div>
         <div class="row">
@@ -123,11 +123,11 @@
           </div>
           <p class="muted small">Arrow keys nudge the point by 1 m (Shift: 5 m).</p>
         </div>
-        <h3>Strand</h3>
+        <h3>Trace</h3>
         <div class="row">
           <button id="s-reverse" title="Reverse the point order (swaps start and end)">Reverse</button>
-          <button id="s-hide" title="Hide this strand (H)">Hide <kbd>H</kbd></button>
-          <button id="s-delete" class="danger">Delete strand</button>
+          <button id="s-hide" title="Hide this trace (H)">Hide <kbd>H</kbd></button>
+          <button id="s-delete" class="danger">Delete trace</button>
         </div>
       </section>
 
@@ -201,23 +201,23 @@
       <h2>How to use</h2>
       <h3>Tracing</h3>
       <ul>
-        <li><kbd>T</kbd> Trace mode: click along a scarp to add points. <kbd>Enter</kbd>, <kbd>Esc</kbd> or double-click finishes the strand; the next click starts a new one. <kbd>Backspace</kbd> removes the last point while drawing.</li>
+        <li><kbd>T</kbd> Trace mode: click along a scarp to add points. <kbd>Enter</kbd>, <kbd>Esc</kbd> or double-click finishes the trace; the next click starts a new one. <kbd>Backspace</kbd> removes the last point while drawing.</li>
         <li>Trace the foot or the crest consistently; NW-facing steps (NW side down) are the scarps.</li>
       </ul>
-      <h3>Editing a strand</h3>
+      <h3>Editing a trace</h3>
       <ul>
-        <li><kbd>V</kbd> Select mode, then click a strand (or its name in the list). Its points appear; the green one is the start.</li>
+        <li><kbd>V</kbd> Select mode, then click a trace (or its name in the list). Its points appear; the green one is the start.</li>
         <li><kbd>M</kbd> Move: drag points. Drag (or click) the small round handles in the middle of segments to insert a point there.</li>
-        <li><kbd>I</kbd> Insert: click on or near the strand; the point is inserted in the nearest segment. (Shift-click on a line also inserts.)</li>
+        <li><kbd>I</kbd> Insert: click on or near the trace; the point is inserted in the nearest segment. (Shift-click on a line also inserts.)</li>
         <li><kbd>D</kbd> Delete: click points to delete them. (Alt-click or right-click also deletes.)</li>
-        <li><kbd>A</kbd> / <kbd>C</kbd> add points at the start / end of the selected strand; <kbd>Enter</kbd> when done.</li>
+        <li><kbd>A</kbd> / <kbd>C</kbd> add points at the start / end of the selected trace; <kbd>Enter</kbd> when done.</li>
         <li>Click a point to select it: edit its E / N, step with <kbd>[</kbd> <kbd>]</kbd>, nudge with the arrow keys (Shift: 5 m), <kbd>Del</kbd> deletes it, <kbd>Esc</kbd> deselects it.</li>
         <li><kbd>Cmd/Ctrl+Z</kbd> undo, <kbd>Shift+Cmd/Ctrl+Z</kbd> redo.</li>
       </ul>
-      <h3>Showing and hiding strands</h3>
+      <h3>Showing and hiding traces</h3>
       <ul>
-        <li>The ● / ○ button in the list shows or hides a strand. <kbd>H</kbd> hides the selected strand, <kbd>Shift+H</kbd> shows all. <em>Only selected</em> hides all others.</li>
-        <li>Hidden strands are kept and exported (with <code>visible: false</code>).</li>
+        <li>The ● / ○ button in the list shows or hides a trace. <kbd>H</kbd> hides the selected trace, <kbd>Shift+H</kbd> shows all. <em>Only selected</em> hides all others.</li>
+        <li>Hidden traces are kept and exported (with <code>visible: false</code>).</li>
       </ul>
       <h3>Profiles</h3>
       <ul>
@@ -239,7 +239,7 @@
         <li>Everything is saved automatically in this browser (for this web address).</li>
         <li><strong>Paper's interpretation</strong> loads the scarp traces and the profile review used in the paper (Cardozo and Watson); the accepted profiles are those analysed there.</li>
         <li><strong>Export GeoJSON</strong> regularly to keep your traces as a file (ETRS89 / UTM 33N, EPSG:25833); <strong>Import traces</strong> loads such a file again. In Review mode, <strong>Export review</strong> / <strong>Import review</strong> do the same for the profile decisions (CSV).</li>
-        <li><strong>New</strong> starts from scratch: it removes all strands, profiles and review decisions stored in this browser (export first to keep them).</li>
+        <li><strong>New</strong> starts from scratch: it removes all traces, profiles and review decisions stored in this browser (export first to keep them).</li>
       </ul>
       <h3>Map</h3>
       <ul>
@@ -253,6 +253,6 @@
   </div>
 </div>
 <script src="lib/leaflet.min.js"></script>
-<script src="app.js?v=20261119a"></script>
+<script src="app.js?v=20261119b"></script>
 </body>
 </html>

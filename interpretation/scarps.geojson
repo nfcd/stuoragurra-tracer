@@ -11,7 +11,7 @@
    "type": "Feature",
    "properties": {
     "kind": "scarp",
-    "name": "strand 1",
+    "name": "trace 1",
     "confidence": "certain",
     "notes": "",
     "length_m": 643
@@ -182,7 +182,7 @@
    "type": "Feature",
    "properties": {
     "kind": "scarp",
-    "name": "strand 2",
+    "name": "trace 2",
     "confidence": "certain",
     "notes": "",
     "length_m": 794
@@ -461,7 +461,7 @@
    "type": "Feature",
    "properties": {
     "kind": "scarp",
-    "name": "strand 3",
+    "name": "trace 3",
     "confidence": "certain",
     "notes": "",
     "length_m": 671
@@ -776,7 +776,7 @@
    "type": "Feature",
    "properties": {
     "kind": "scarp",
-    "name": "strand 4",
+    "name": "trace 4",
     "confidence": "certain",
     "notes": "",
     "length_m": 1679
@@ -1439,7 +1439,7 @@
    "type": "Feature",
    "properties": {
     "kind": "scarp",
-    "name": "strand 5",
+    "name": "trace 5",
     "confidence": "certain",
     "notes": "",
     "length_m": 300
@@ -1634,7 +1634,7 @@
    "type": "Feature",
    "properties": {
     "kind": "scarp",
-    "name": "strand 6",
+    "name": "trace 6",
     "confidence": "certain",
     "notes": "",
     "length_m": 506
@@ -1797,7 +1797,7 @@
    "type": "Feature",
    "properties": {
     "kind": "scarp",
-    "name": "strand 7",
+    "name": "trace 7",
     "confidence": "certain",
     "notes": "",
     "length_m": 3083
@@ -2672,7 +2672,7 @@
    "type": "Feature",
    "properties": {
     "kind": "scarp",
-    "name": "strand 8",
+    "name": "trace 8",
     "confidence": "certain",
     "notes": "",
     "length_m": 1961
@@ -3359,7 +3359,7 @@
    "type": "Feature",
    "properties": {
     "kind": "scarp",
-    "name": "strand 9",
+    "name": "trace 9",
     "confidence": "certain",
     "notes": "",
     "length_m": 477
@@ -3530,7 +3530,7 @@
    "type": "Feature",
    "properties": {
     "kind": "scarp",
-    "name": "strand 10",
+    "name": "trace 10",
     "confidence": "certain",
     "notes": "",
     "length_m": 552
@@ -3673,7 +3673,7 @@
    "type": "Feature",
    "properties": {
     "kind": "scarp",
-    "name": "strand 11",
+    "name": "trace 11",
     "confidence": "certain",
     "notes": "",
     "length_m": 1293
@@ -3812,7 +3812,7 @@
    "type": "Feature",
    "properties": {
     "kind": "scarp",
-    "name": "strand 12",
+    "name": "trace 12",
     "confidence": "certain",
     "notes": "",
     "length_m": 1672
@@ -4063,7 +4063,7 @@
    "type": "Feature",
    "properties": {
     "kind": "scarp",
-    "name": "strand 13",
+    "name": "trace 13",
     "confidence": "certain",
     "notes": "",
     "length_m": 779
@@ -4234,7 +4234,7 @@
    "type": "Feature",
    "properties": {
     "kind": "scarp",
-    "name": "strand 14",
+    "name": "trace 14",
     "confidence": "certain",
     "notes": "",
     "length_m": 1194
@@ -4581,7 +4581,7 @@
    "type": "Feature",
    "properties": {
     "kind": "scarp",
-    "name": "strand 15",
+    "name": "trace 15",
     "confidence": "certain",
     "notes": "",
     "length_m": 1408
@@ -4828,7 +4828,7 @@
    "type": "Feature",
    "properties": {
     "kind": "scarp",
-    "name": "strand 16",
+    "name": "trace 16",
     "confidence": "certain",
     "notes": "",
     "length_m": 893
@@ -4955,7 +4955,7 @@
    "type": "Feature",
    "properties": {
     "kind": "scarp",
-    "name": "strand 17",
+    "name": "trace 17",
     "confidence": "certain",
     "notes": "",
     "length_m": 1213

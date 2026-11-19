@@ -353,7 +353,7 @@
 
   function newStrand() {
     const n = state.strands.length + 1;
-    const s = { id: nextId++, name: "strand " + n, confidence: "certain", notes: "", coords: [], hidden: false };
+    const s = { id: nextId++, name: "trace " + n, confidence: "certain", notes: "", coords: [], hidden: false };
     state.strands.push(s);
     return s;
   }
@@ -506,7 +506,7 @@
     if (s && tool === "insert") {                 // insert the clicked point into the nearest segment
       const p = en(ev.latlng), nb = nearestSegment(s.coords, p);
       if (nb.i > 0 && nb.d / mpp() <= 40) insertAt(s, nb.i, p);
-      else flash("Insert: click on or close to the selected strand");
+      else flash("Insert: click on or close to the selected trace");
       return;
     }
     if (s && tool === "delete") return;
@@ -530,7 +530,7 @@
     saveQuiet();
   }
   function soloSelected() {
-    if (selId === null) { flash("Select a strand first"); return; }
+    if (selId === null) { flash("Select a trace first"); return; }
     for (const s of state.strands) s.hidden = s.id !== selId;
     saveQuiet();
   }
@@ -779,7 +779,7 @@
     state.strands.forEach((s) => {
       const li = document.createElement("li");
       li.className = (s.id === selId ? "sel" : "") + (s.hidden ? " off" : "");
-      li.innerHTML = `<button class="li-eye" title="${s.hidden ? "Show" : "Hide"} this strand">${s.hidden ? "○" : "●"}</button>` +
+      li.innerHTML = `<button class="li-eye" title="${s.hidden ? "Show" : "Hide"} this trace">${s.hidden ? "○" : "●"}</button>` +
         `<span class="swatch" style="background:${CONF_COLOR[s.confidence]}"></span>` +
         `<span class="li-name"></span><span class="muted small">${(lengthOf(s.coords) / 1000).toFixed(2)} km</span>`;
       li.querySelector(".li-name").textContent = s.name;
@@ -881,14 +881,14 @@
       const gj = JSON.parse(text);
       const b = snap();
       const replace = replaceAll || state.strands.length === 0 ||
-        confirm("Replace the current strands and profiles? (Cancel adds the imported ones instead)");
+        confirm("Replace the current traces and profiles? (Cancel adds the imported ones instead)");
       if (replace) { state.strands = []; state.profiles = []; }
       for (const ft of gj.features || []) {
         if (!ft.geometry || ft.geometry.type !== "LineString") continue;
         const c = ft.geometry.coordinates.map(([e, n]) => [e, n]);
         const pr = ft.properties || {};
         if (pr.kind === "profile") state.profiles.push({ id: nextId++, name: pr.name || profileName(), a: c[0], b: c[c.length - 1] });
-        else state.strands.push({ id: nextId++, name: pr.name || "strand " + (state.strands.length + 1),
+        else state.strands.push({ id: nextId++, name: pr.name || "trace " + (state.strands.length + 1),
                                   confidence: CONF_COLOR[pr.confidence] ? pr.confidence : "certain", notes: pr.notes || "", coords: c,
                                   hidden: pr.visible === false });
       }
@@ -1286,7 +1286,7 @@
 
   // ---------------------------------------------------------------- start from scratch
   $("new").onclick = () => {
-    if (!confirm("Start from scratch? This removes all strands, profiles and review decisions stored in this browser.\n" +
+    if (!confirm("Start from scratch? This removes all traces, profiles and review decisions stored in this browser.\n" +
                  "Export your traces and review first if you want to keep them.")) return;
     const b = snap();
     state.strands = []; state.profiles = [];
