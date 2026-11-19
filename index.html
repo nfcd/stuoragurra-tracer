@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stuoragurra Scarp Tracer</title>
+<link rel="stylesheet" href="lib/leaflet.min.css">
+<link rel="stylesheet" href="style.css?v=20261119a">
+  <style>[hidden] { display: none !important; }</style>  <!-- panels hidden at launch even with an old cached style.css -->
+</head>
+<body>
+<div id="app">
+  <header id="toolbar">
+    <div class="brand">Stuoragurra scarp tracer</div>
+    <div class="group" role="group" aria-label="Mode">
+      <button id="mode-pan" class="mode active" title="Pan / select (V)">Select <kbd>V</kbd></button>
+      <button id="mode-trace" class="mode" title="Trace scarps (T)">Trace <kbd>T</kbd></button>
+      <button id="mode-profile" class="mode" title="Topographic profile (P)">Profile <kbd>P</kbd></button>
+      <button id="mode-review" class="mode" title="Review the profiles across the traces (R)">Review <kbd>R</kbd></button>
+    </div>
+    <div class="group" role="group" aria-label="Background">
+      <button id="bg-elev" class="bg active" title="Elevation with hillshade (1)">Elevation</button>
+      <button id="bg-hs" class="bg" title="Hillshade, sun from the NW (2)">Hillshade</button>
+      <button id="bg-tex" class="bg" title="Texture shading (3)">Texture</button>
+      <button id="bg-scarp" class="bg" title="Scarp index: sharp NW-facing steps (4)">Scarp index</button>
+    </div>
+    <div class="group">
+      <label class="small" title="Draw the review profiles on the map in every mode (colour = decision; click one to review it)">Profiles
+        <select id="map-prof"><option value="off">off</option><option value="all">all</option><option value="accept">accepted</option></select></label>
+    </div>
+    <div class="group">
+      <button id="undo" title="Undo (Cmd/Ctrl+Z)">Undo</button>
+      <button id="redo" title="Redo (Shift+Cmd/Ctrl+Z)">Redo</button>
+    </div>
+    <div class="group right">
+      <button id="paper" title="Load the scarp traces and the profile review used in the paper">Paper's interpretation</button>
+      <button id="new" title="Start from scratch: remove all strands, profiles and review decisions stored in this browser">New</button>
+      <button id="export" class="primary" title="Save your strands and profiles as GeoJSON (EPSG:25833)">Export GeoJSON</button>
+      <label class="button" title="Load interpreted traces (strands and profiles) from a GeoJSON exported earlier">Import traces<input id="import" type="file" accept=".geojson,.json" hidden></label>
+      <button id="help-btn" title="Help (?)">?</button>
+    </div>
+  </header>
+
+  <div id="main">
+    <div id="map"></div>
+
+    <aside id="side">
+      <section id="elev-panel" hidden>
+        <h2>Elevation colours</h2>
+        <label>Palette
+          <select id="c-pal">
+            <option value="terrain">terrain</option>
+            <option value="grey">grey (low dark, high light)</option>
+            <option value="greyr">grey reversed</option>
+          </select>
+        </label>
+        <canvas id="cbar"></canvas>
+        <div class="row2">
+          <label>Min (m) <input id="c-min" type="number" step="0.5"></label>
+          <label>Max (m) <input id="c-max" type="number" step="0.5"></label>
+        </div>
+        <div class="row">
+          <button id="c-fit" title="Stretch the colours to the elevations in view (F)">Fit to view <kbd>F</kbd></button>
+          <button id="c-reset" title="Back to the full corridor range">Reset</button>
+        </div>
+        <label>Hillshade <input id="c-shade" type="range" min="0" max="1" step="0.05"></label>
+        <p class="muted small">Elevations below Min / above Max take the end colours.</p>
+      </section>
+
+      <section id="grey-panel" hidden>
+        <h2 id="grey-title">Texture shading</h2>
+        <p id="grey-desc" class="muted small"></p>
+        <label>Contrast <input id="g-contrast" type="range" min="0.5" max="4" step="0.1"></label>
+        <label>Brightness <input id="g-bright" type="range" min="0.5" max="1.5" step="0.05"></label>
+        <div class="row"><button id="g-reset">Reset</button></div>
+      </section>
+
+      <section>
+        <h2>Strands <span id="strand-count" class="muted"></span></h2>
+        <div class="row small" id="vis-row" hidden>
+          <button id="vis-all" title="Show all strands (Shift+H)">Show all</button>
+          <button id="vis-none" title="Hide all strands">Hide all</button>
+          <button id="vis-solo" title="Show only the selected strand">Only selected</button>
+        </div>
+        <ul id="strand-list"></ul>
+        <p id="no-strands" class="muted">No strands yet. Press <kbd>T</kbd> and click along a scarp.</p>
+      </section>
+
+      <section id="strand-panel" hidden>
+        <h2>Selected strand</h2>
+        <label>Name <input id="s-name" type="text"></label>
+        <label>Confidence
+          <select id="s-conf">
+            <option value="certain">certain</option>
+            <option value="probable">probable</option>
+            <option value="possible">possible</option>
+          </select>
+        </label>
+        <label>Notes <textarea id="s-notes" rows="3"></textarea></label>
+        <div class="stats" id="s-stats"></div>
+        <h3>Edit points</h3>
+        <div class="row tools">
+          <button id="tool-move" class="tool" title="Drag points; drag or click the small mid-segment handles to insert (M)">Move <kbd>M</kbd></button>
+          <button id="tool-insert" class="tool" title="Click on or near the strand to insert a point there (I)">Insert <kbd>I</kbd></button>
+          <button id="tool-delete" class="tool" title="Click a point to delete it (D)">Delete <kbd>D</kbd></button>
+        </div>
+        <div class="row">
+          <button id="s-prepend" title="Click on the map to add points before the start, the green point (A)">Add at start <kbd>A</kbd></button>
+          <button id="s-continue" title="Click on the map to add points after the end (C)">Add at end <kbd>C</kbd></button>
+        </div>
+        <div id="pt-panel" hidden>
+          <h3>Point <span id="pt-idx" class="muted"></span></h3>
+          <div class="row2">
+            <label>E (m) <input id="pt-e" type="number" step="0.5"></label>
+            <label>N (m) <input id="pt-n" type="number" step="0.5"></label>
+          </div>
+          <div class="stats" id="pt-z"></div>
+          <div class="row">
+            <button id="pt-prev" title="Previous point ([)">◀ <kbd>[</kbd></button>
+            <button id="pt-next" title="Next point (])"><kbd>]</kbd> ▶</button>
+            <button id="pt-zoom" title="Zoom to this point">Zoom</button>
+            <button id="pt-del" class="danger" title="Delete this point (Del)">Delete point</button>
+          </div>
+          <p class="muted small">Arrow keys nudge the point by 1 m (Shift: 5 m).</p>
+        </div>
+        <h3>Strand</h3>
+        <div class="row">
+          <button id="s-reverse" title="Reverse the point order (swaps start and end)">Reverse</button>
+          <button id="s-hide" title="Hide this strand (H)">Hide <kbd>H</kbd></button>
+          <button id="s-delete" class="danger">Delete strand</button>
+        </div>
+      </section>
+
+      <section id="profiles-section" hidden>
+        <h2>Saved profiles <span id="prof-count" class="muted"></span></h2>
+        <ul id="profile-list"></ul>
+        <p id="no-profiles" class="muted">Press <kbd>P</kbd> and click two points.</p>
+      </section>
+
+      <section class="muted small" id="status">
+        <div id="cursor">E – N – z –</div>
+        <div id="savestate">Saved in this browser</div>
+      </section>
+    </aside>
+  </div>
+
+  <div id="profile-panel" hidden>
+    <div class="phead">
+      <strong id="p-title">Profile</strong>
+      <span id="p-info" class="muted"></span>
+      <span class="spacer"></span>
+      <label class="small">Vertical exaggeration
+        <select id="p-vex">
+          <option value="1" selected>1×</option><option value="2">2×</option><option value="3">3×</option><option value="4">4×</option><option value="5">5×</option><option value="auto">auto</option>
+        </select>
+      </label>
+      <button id="p-save" title="Keep this profile in the list">Keep</button>
+      <button id="p-csv" title="Download distance, E, N, elevation">CSV</button>
+    </div>
+    <canvas id="p-canvas"></canvas>
+  </div>
+
+  <div id="review-panel" hidden>
+    <div class="phead">
+      <strong id="r-title">Review</strong>
+      <span id="r-status" class="rstatus"></span>
+      <span class="spacer"></span>
+      <label class="small">Trace <select id="r-trace"></select></label>
+      <label class="small" title="Show and step through only these profiles">Show <select id="r-filter">
+        <option value="all">All</option><option value="accept">Accepted</option><option value="unsure">Unsure</option>
+        <option value="reject">Rejected</option><option value="none">Not reviewed</option></select></label>
+      <span id="r-fcount" class="small muted"></span>
+      <label class="small">Half-length (m) <input id="r-half" type="number" min="10" max="400" step="10" value="50"></label>
+      <label class="small">Swath ± (m) <input id="r-band" type="number" min="0" max="50" step="5" value="20"></label>
+      <label class="small"><input id="r-line" type="checkbox" checked> central line</label>
+      <label class="small" title="Vertical exaggeration of the chart, as in the Profile panel">Vertical exaggeration
+        <select id="r-vex"><option value="1" selected>1×</option><option value="2">2×</option><option value="3">3×</option><option value="4">4×</option><option value="5">5×</option><option value="auto">auto</option></select></label>
+      <button id="r-export" title="Download the decisions as CSV">Export review</button>
+      <label class="button small" title="Load decisions from an exported review CSV">Import review<input id="r-import" type="file" accept=".csv" hidden></label>
+    </div>
+    <div class="rbody">
+      <canvas id="r-canvas"></canvas>
+      <div class="rside">
+        <div class="rbtns">
+          <button id="r-prev" title="Previous profile (←)">◀ <kbd>←</kbd></button>
+          <button id="r-next" title="Next profile (→)"><kbd>→</kbd> ▶</button>
+        </div>
+        <button id="r-accept" class="dec acc" title="Accept: records the fault (Y)">Accept <kbd>Y</kbd></button>
+        <button id="r-unsure" class="dec uns" title="Unsure (U)">Unsure <kbd>U</kbd></button>
+        <button id="r-reject" class="dec rej" title="Reject: glacial or unclear (N)">Reject <kbd>N</kbd></button>
+        <button id="r-clear" class="small" title="Remove the decision (0)">Clear <kbd>0</kbd></button>
+        <button id="r-nextopen" class="small" title="Next profile without a decision (Space)">Next unreviewed <kbd>Space</kbd></button>
+        <textarea id="r-note" rows="2" placeholder="note (optional)"></textarea>
+        <div id="r-metrics" class="small muted"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="help" hidden>
+    <div class="help-box">
+      <h2>How to use</h2>
+      <h3>Tracing</h3>
+      <ul>
+        <li><kbd>T</kbd> Trace mode: click along a scarp to add points. <kbd>Enter</kbd>, <kbd>Esc</kbd> or double-click finishes the strand; the next click starts a new one. <kbd>Backspace</kbd> removes the last point while drawing.</li>
+        <li>Trace the foot or the crest consistently; NW-facing steps (NW side down) are the scarps.</li>
+      </ul>
+      <h3>Editing a strand</h3>
+      <ul>
+        <li><kbd>V</kbd> Select mode, then click a strand (or its name in the list). Its points appear; the green one is the start.</li>
+        <li><kbd>M</kbd> Move: drag points. Drag (or click) the small round handles in the middle of segments to insert a point there.</li>
+        <li><kbd>I</kbd> Insert: click on or near the strand; the point is inserted in the nearest segment. (Shift-click on a line also inserts.)</li>
+        <li><kbd>D</kbd> Delete: click points to delete them. (Alt-click or right-click also deletes.)</li>
+        <li><kbd>A</kbd> / <kbd>C</kbd> add points at the start / end of the selected strand; <kbd>Enter</kbd> when done.</li>
+        <li>Click a point to select it: edit its E / N, step with <kbd>[</kbd> <kbd>]</kbd>, nudge with the arrow keys (Shift: 5 m), <kbd>Del</kbd> deletes it, <kbd>Esc</kbd> deselects it.</li>
+        <li><kbd>Cmd/Ctrl+Z</kbd> undo, <kbd>Shift+Cmd/Ctrl+Z</kbd> redo.</li>
+      </ul>
+      <h3>Showing and hiding strands</h3>
+      <ul>
+        <li>The ● / ○ button in the list shows or hides a strand. <kbd>H</kbd> hides the selected strand, <kbd>Shift+H</kbd> shows all. <em>Only selected</em> hides all others.</li>
+        <li>Hidden strands are kept and exported (with <code>visible: false</code>).</li>
+      </ul>
+      <h3>Profiles</h3>
+      <ul>
+        <li><kbd>P</kbd> Profile mode: click two points. The topography (1 m sampling) appears in the panel below; drag the end points to adjust. The panel is shown only in Profile mode (like the Review panel in Review mode); <kbd>V</kbd> or <kbd>Esc</kbd> leaves the mode and closes it.</li>
+        <li>Hover the chart to see the position on the map. <em>Keep</em> stores the profile; <em>CSV</em> downloads it.</li>
+      </ul>
+      <h3>Reviewing profiles</h3>
+      <ul>
+        <li><kbd>R</kbd> Review mode: profiles every 100 m along your traces, perpendicular to the local strike, named <code>T07_P012</code> (trace 7, 12th profile from the trace's first point).</li>
+        <li>The chart shows the swath profile: median (black) and 25–75 % range (light blue) of the elevations within ± the swath width along strike; the thin blue line is the single central profile; the red dashed line is the trace. Half-length and swath width can be changed; they are stored with the export. <em>Vertical exaggeration</em> sets the chart scale as in the Profile panel: 1× (true scale, the default) to 5×, or auto (fit to the panel, factor shown); with a fixed factor the axes extend so that the whole profile fits.</li>
+        <li><strong>Profiles</strong> (toolbar): draws the review profiles on the map in every mode, all or only the accepted ones, coloured by decision; click one to open it in Review mode.</li>
+        <li><strong>Show</strong> (Review panel): only the accepted, unsure, rejected or not-reviewed profiles are drawn, and <kbd>←</kbd> / <kbd>→</kbd> step through them only.</li>
+        <li><kbd>Y</kbd> accept, <kbd>N</kbd> reject, <kbd>U</kbd> unsure, <kbd>0</kbd> clear; each decision moves to the next profile. <kbd>←</kbd> / <kbd>→</kbd> previous / next, <kbd>Space</kbd> next unreviewed. Click a profile on the map to go to it.</li>
+        <li>The numbers under the buttons are advice only: local step height (lines fitted 10–30 m either side) and how planar the ground is 10–60 m either side (RMS scatter).</li>
+        <li>Decisions are saved in this browser; <strong>Export review</strong> writes them as CSV. If a trace is edited, decisions for profiles that moved more than 5 m are shown as outdated.</li>
+      </ul>
+      <h3>Saving</h3>
+      <ul>
+        <li>Everything is saved automatically in this browser (for this web address).</li>
+        <li><strong>Paper's interpretation</strong> loads the scarp traces and the profile review used in the paper (Cardozo and Watson); the accepted profiles are those analysed there.</li>
+        <li><strong>Export GeoJSON</strong> regularly to keep your traces as a file (ETRS89 / UTM 33N, EPSG:25833); <strong>Import traces</strong> loads such a file again. In Review mode, <strong>Export review</strong> / <strong>Import review</strong> do the same for the profile decisions (CSV).</li>
+        <li><strong>New</strong> starts from scratch: it removes all strands, profiles and review decisions stored in this browser (export first to keep them).</li>
+      </ul>
+      <h3>Map</h3>
+      <ul>
+        <li>Scarp index: elevation step across ±5 m perpendicular to the fault, minus the regional slope (0–3 m colour scale). Elevation: colours with hillshade. Data: Kartverket / høydedata.no.</li>
+        <li><kbd>1</kbd> elevation, <kbd>2</kbd> hillshade, <kbd>3</kbd> texture shading, <kbd>4</kbd> scarp index.</li>
+        <li>Hillshade: grey shading with the sun from the NW (azimuth 315°, altitude 35°). Texture shading (fractional Laplacian, α = 0.8, wavelengths &gt; ~300 m suppressed) shows fine relief while keeping the local shape of the terrain. Both have contrast / brightness sliders.</li>
+        <li>Elevation colours: set Min / Max in the side panel, or press <kbd>F</kbd> to stretch the colours to the area in view (2–98 % of elevations). A narrow range around a scarp makes small steps and their terminations stand out. The hillshade slider sets how much shading is mixed in (0 = colours only).</li>
+      </ul>
+      <button id="help-close" class="primary">Close</button>
+    </div>
+  </div>
+</div>
+<script src="lib/leaflet.min.js"></script>
+<script src="app.js?v=20261119a"></script>
+</body>
+</html>
