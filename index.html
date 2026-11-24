@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Stuoragurra Scarp Tracer</title>
 <link rel="stylesheet" href="lib/leaflet.min.css">
-<link rel="stylesheet" href="style.css?v=20261119d">
+<link rel="stylesheet" href="style.css?v=20261124a">
   <style>[hidden] { display: none !important; }</style>  <!-- panels hidden at launch even with an old cached style.css -->
 </head>
 <body>
@@ -200,60 +200,32 @@
   <div id="help" hidden>
     <div class="help-box">
       <h2>How to use</h2>
+      <p><strong>Paper's interpretation</strong> loads the scarp traces and profile review used in the paper. You can also map your own scarps.</p>
+      <h3>Map</h3>
+      <ul>
+        <li><kbd>1</kbd> elevation, <kbd>2</kbd> hillshade, <kbd>3</kbd> texture shading, <kbd>4</kbd> scarp index. <kbd>F</kbd> stretches the elevation colours to the view.</li>
+      </ul>
       <h3>Tracing</h3>
       <ul>
-        <li><kbd>T</kbd> Trace mode: click along a scarp to add points. <kbd>Enter</kbd>, <kbd>Esc</kbd> or double-click finishes the trace; the next click starts a new one. <kbd>Backspace</kbd> removes the last point while drawing.</li>
-        <li>Trace the foot or the crest consistently; NW-facing steps (NW side down) are the scarps.</li>
-      </ul>
-      <h3>Editing a trace</h3>
-      <ul>
-        <li><kbd>V</kbd> Select mode, then click a trace (or its name in the list). Its points appear; the green one is the start.</li>
-        <li><kbd>M</kbd> Move: drag points. Drag (or click) the small round handles in the middle of segments to insert a point there.</li>
-        <li><kbd>I</kbd> Insert: click on or near the trace; the point is inserted in the nearest segment. (Shift-click on a line also inserts.)</li>
-        <li><kbd>D</kbd> Delete: click points to delete them. (Alt-click or right-click also deletes.)</li>
-        <li><kbd>A</kbd> / <kbd>C</kbd> add points at the start / end of the selected trace; <kbd>Enter</kbd> when done.</li>
-        <li>Click a point to select it: edit its E / N, step with <kbd>[</kbd> <kbd>]</kbd>, nudge with the arrow keys (Shift: 5 m), <kbd>Del</kbd> deletes it, <kbd>Esc</kbd> deselects it.</li>
-        <li><kbd>Cmd/Ctrl+Z</kbd> undo, <kbd>Shift+Cmd/Ctrl+Z</kbd> redo.</li>
-      </ul>
-      <h3>Showing and hiding traces</h3>
-      <ul>
-        <li>The ● / ○ button in the list shows or hides a trace. <kbd>H</kbd> hides the selected trace, <kbd>Shift+H</kbd> shows all. <em>Only selected</em> hides all others.</li>
-        <li>Hidden traces are kept and exported (with <code>visible: false</code>).</li>
+        <li><kbd>T</kbd> trace: click along a scarp; <kbd>Enter</kbd> or double-click finishes.</li>
+        <li><kbd>V</kbd> select a trace, then <kbd>M</kbd> move, <kbd>I</kbd> insert or <kbd>D</kbd> delete points. <kbd>Cmd/Ctrl+Z</kbd> undoes.</li>
+        <li><kbd>H</kbd> hides the selected trace, <kbd>Shift+H</kbd> shows all.</li>
       </ul>
       <h3>Profiles</h3>
       <ul>
-        <li><kbd>P</kbd> Profile mode: click two points. The topography (1 m sampling) appears in the panel below; drag the end points to adjust. The panel is shown only in Profile mode (like the Review panel in Review mode); <kbd>V</kbd> or <kbd>Esc</kbd> leaves the mode and closes it.</li>
-        <li>Hover the chart to see the position on the map. <em>Keep</em> stores the profile; <em>CSV</em> downloads it.</li>
-      </ul>
-      <h3>Reviewing profiles</h3>
-      <ul>
-        <li><kbd>R</kbd> Review mode: profiles every 100 m along your traces, perpendicular to the local strike, named <code>T07_P012</code> (trace 7, 12th profile from the trace's first point).</li>
-        <li>The chart shows the swath profile: median (black) and 25–75 % range (light blue) of the elevations within ± the swath width along strike; the thin blue line is the single central profile; the red dashed line is the trace. Half-length and swath width can be changed; they are stored with the export. <em>Vertical exaggeration</em> sets the chart scale as in the Profile panel: 1× (true scale, the default) to 5×, or auto (fit to the panel, factor shown); with a fixed factor the axes extend so that the whole profile fits.</li>
-        <li><strong>Profiles</strong> (toolbar): draws the review profiles on the map in every mode, all or only the accepted ones, coloured by decision; click one to open it in Review mode.</li>
-        <li><strong>Show</strong> (Review panel): only the accepted, unsure, rejected or not-reviewed profiles are drawn, and <kbd>←</kbd> / <kbd>→</kbd> step through them only.</li>
-        <li><kbd>Y</kbd> accept, <kbd>N</kbd> reject, <kbd>U</kbd> unsure, <kbd>0</kbd> clear; each decision moves to the next profile. <kbd>←</kbd> / <kbd>→</kbd> previous / next, <kbd>Space</kbd> next unreviewed. Click a profile on the map to go to it.</li>
-        <li>The numbers under the buttons are advice only: local step height (lines fitted 10–30 m either side) and how planar the ground is 10–60 m either side (RMS scatter).</li>
-        <li>Decisions are saved in this browser; <strong>Export review</strong> writes them as CSV. If a trace is edited, decisions for profiles that moved more than 5 m are shown as outdated.</li>
+        <li><kbd>P</kbd> draws a profile between two points.</li>
+        <li><kbd>R</kbd> reviews profiles every 100 m along the traces: <kbd>Y</kbd> accept, <kbd>N</kbd> reject, <kbd>U</kbd> unsure, <kbd>←</kbd> / <kbd>→</kbd> previous / next.</li>
       </ul>
       <h3>Saving</h3>
       <ul>
-        <li>Everything is saved automatically in this browser (for this web address).</li>
-        <li><strong>Paper's interpretation</strong> loads the scarp traces and the profile review used in the paper (Cardozo and Watson); the accepted profiles are those analysed there.</li>
-        <li><strong>Export GeoJSON</strong> regularly to keep your traces as a file (ETRS89 / UTM 33N, EPSG:25833); <strong>Import traces</strong> loads such a file again. In Review mode, <strong>Export review</strong> / <strong>Import review</strong> do the same for the profile decisions (CSV).</li>
-        <li><strong>New</strong> starts from scratch: it removes all traces, profiles and review decisions stored in this browser (export first to keep them).</li>
+        <li>Work is saved in this browser. <strong>Export GeoJSON</strong> and <strong>Export review</strong> save it as files; <strong>New</strong> clears everything.</li>
       </ul>
-      <h3>Map</h3>
-      <ul>
-        <li>Scarp index: elevation step across ±5 m perpendicular to the fault, minus the regional slope (0–3 m colour scale). Elevation: colours with hillshade. Data: Kartverket / høydedata.no.</li>
-        <li><kbd>1</kbd> elevation, <kbd>2</kbd> hillshade, <kbd>3</kbd> texture shading, <kbd>4</kbd> scarp index.</li>
-        <li>Hillshade: grey shading with the sun from the NW (azimuth 315°, altitude 35°). Texture shading (fractional Laplacian, α = 0.8, wavelengths &gt; ~300 m suppressed) shows fine relief while keeping the local shape of the terrain. Both have contrast / brightness sliders.</li>
-        <li>Elevation colours: set Min / Max in the side panel, or press <kbd>F</kbd> to stretch the colours to the area in view (2–98 % of elevations). A narrow range around a scarp makes small steps and their terminations stand out. The hillshade slider sets how much shading is mixed in (0 = colours only).</li>
-      </ul>
+      <p class="small muted">Press <kbd>?</kbd> to open this help again. Data: Kartverket / høydedata.no.</p>
       <button id="help-close" class="primary">Close</button>
     </div>
   </div>
 </div>
 <script src="lib/leaflet.min.js"></script>
-<script src="app.js?v=20261119d"></script>
+<script src="app.js?v=20261124a"></script>
 </body>
 </html>

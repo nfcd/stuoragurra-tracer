@@ -60,6 +60,7 @@ ul { list-style: none; margin: 0; padding: 0; }
 .help-box { background: #fff; max-width: 640px; max-height: 85vh; overflow-y: auto; padding: 16px 22px; border-radius: 10px; }
 .help-box h3 { margin: 12px 0 4px; font-size: 13px; }
 .help-box li { margin: 3px 0; }
+.help-box #help-close { position: sticky; bottom: 0; margin-top: 10px; }  /* always reachable, even when the help scrolls */
 
 .vx { width: 10px; height: 10px; margin: -5px 0 0 -5px; background: #fff; border: 2px solid #111; border-radius: 2px; }
 .vx.sel { border-color: var(--accent); }
